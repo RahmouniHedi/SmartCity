@@ -1,0 +1,203 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart City - Control Center Dashboard</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+<!-- Header -->
+<header class="header">
+    <div class="container">
+        <h1 class="logo">🏙️ Smart City Control Center</h1>
+        <div class="status-indicator">
+            <span class="status-dot" id="connectionStatus"></span>
+            <span id="statusText">Connecting...</span>
+        </div>
+    </div>
+</header>
+
+<!-- Main Dashboard -->
+<main class="dashboard">
+    <div class="container">
+
+        <!-- Dashboard Controls -->
+        <div class="controls-panel">
+            <button class="btn btn-primary" onclick="refreshDashboard()">
+                🔄 Refresh Dashboard
+            </button>
+            <button class="btn btn-secondary" onclick="showReportModal()">
+                📝 Report New Incident
+            </button>
+            <div class="auto-refresh">
+                <label>
+                    <input type="checkbox" id="autoRefresh" checked>
+                    Auto-refresh (30s)
+                </label>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card critical">
+                <div class="stat-icon">🚨</div>
+                <div class="stat-content">
+                    <h3 id="criticalAlertsCount">-</h3>
+                    <p>Critical Alerts</p>
+                </div>
+            </div>
+            <div class="stat-card warning">
+                <div class="stat-icon">⚠️</div>
+                <div class="stat-content">
+                    <h3 id="totalAlertsCount">-</h3>
+                    <p>Total Alerts</p>
+                </div>
+            </div>
+            <div class="stat-card info">
+                <div class="stat-icon">📋</div>
+                <div class="stat-content">
+                    <h3 id="totalIncidentsCount">-</h3>
+                    <p>Active Incidents</p>
+                </div>
+            </div>
+            <div class="stat-card success">
+                <div class="stat-icon">✅</div>
+                <div class="stat-content">
+                    <h3 id="resolvedCount">-</h3>
+                    <p>Resolved Today</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Two-Column Layout -->
+        <div class="main-grid">
+
+            <!-- Left Column: Government Alerts (SOAP) -->
+            <div class="panel alerts-panel">
+                <div class="panel-header">
+                    <h2>🏛️ Government Alerts (SOAP Service)</h2>
+                    <span class="badge" id="alertsBadge">0</span>
+                </div>
+                <div class="panel-controls">
+                    <button class="btn-small" onclick="loadAllAlerts()">All</button>
+                    <button class="btn-small critical-btn" onclick="loadCriticalAlerts()">Critical Only</button>
+                    <button class="btn-small" onclick="showBroadcastModal()">+ Broadcast</button>
+                </div>
+                <div class="panel-content" id="alertsContainer">
+                    <div class="loading">Loading alerts...</div>
+                </div>
+            </div>
+
+            <!-- Right Column: Citizen Incidents (REST) -->
+            <div class="panel incidents-panel">
+                <div class="panel-header">
+                    <h2>👥 Citizen Reports (REST API)</h2>
+                    <span class="badge" id="incidentsBadge">0</span>
+                </div>
+                <div class="panel-controls">
+                    <select id="statusFilter" onchange="filterIncidents()">
+                        <option value="">All Status</option>
+                        <option value="REPORTED">Reported</option>
+                        <option value="ACKNOWLEDGED">Acknowledged</option>
+                        <option value="IN_PROGRESS">In Progress</option>
+                        <option value="RESOLVED">Resolved</option>
+                    </select>
+                    <button class="btn-small" onclick="loadHighPriorityIncidents()">High Priority</button>
+                </div>
+                <div class="panel-content" id="incidentsContainer">
+                    <div class="loading">Loading incidents...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Report Incident Modal -->
+<div id="reportModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('reportModal')">&times;</span>
+        <h2>Report New Incident</h2>
+        <form id="reportForm" onsubmit="submitIncident(event)">
+            <div class="form-group">
+                <label>Type:</label>
+                <select id="incidentType" required>
+                    <option value="">Select Type</option>
+                    <option value="Fire">Fire</option>
+                    <option value="Medical Emergency">Medical Emergency</option>
+                    <option value="Traffic Accident">Traffic Accident</option>
+                    <option value="Crime">Crime</option>
+                    <option value="Hazmat">Hazardous Materials</option>
+                    <option value="Flooding">Flooding</option>
+                    <option value="Power Outage">Power Outage</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Location:</label>
+                <input type="text" id="incidentLocation" required placeholder="e.g., 123 Main St">
+            </div>
+            <div class="form-group">
+                <label>Description:</label>
+                <textarea id="incidentDescription" required rows="4"
+                          placeholder="Describe the incident..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Reported By:</label>
+                <input type="text" id="incidentReporter" required placeholder="Your name or ID">
+            </div>
+            <div class="form-group">
+                <label>Priority (1-5):</label>
+                <input type="number" id="incidentPriority" min="1" max="5" value="3" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Report</button>
+        </form>
+    </div>
+</div>
+
+<!-- Broadcast Alert Modal -->
+<div id="broadcastModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('broadcastModal')">&times;</span>
+        <h2>Broadcast Emergency Alert</h2>
+        <form id="broadcastForm" onsubmit="broadcastAlert(event)">
+            <div class="form-group">
+                <label>Severity:</label>
+                <select id="alertSeverity" required>
+                    <option value="INFO">Info</option>
+                    <option value="WARNING">Warning</option>
+                    <option value="SEVERE">Severe</option>
+                    <option value="CRITICAL">Critical</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Region:</label>
+                <input type="text" id="alertRegion" required placeholder="e.g., Downtown Area">
+            </div>
+            <div class="form-group">
+                <label>Message:</label>
+                <textarea id="alertMessage" required rows="4"
+                          placeholder="Emergency alert message..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Issuer:</label>
+                <input type="text" id="alertIssuer" required placeholder="Agency name">
+            </div>
+            <button type="submit" class="btn btn-primary">Broadcast Alert</button>
+        </form>
+    </div>
+</div>
+
+<!-- Notification Toast -->
+<div id="toast" class="toast"></div>
+
+<!-- Footer -->
+<footer class="footer">
+    <p>Smart City Disaster Management System | University Project 2024</p>
+    <p>Distributed Architecture: SOAP + REST + Web Client</p>
+</footer>
+
+<script src="js/dashboard.js"></script>
+</body>
+</html>

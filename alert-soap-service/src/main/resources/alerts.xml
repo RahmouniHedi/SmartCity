@@ -1,0 +1,351 @@
+<!-- ============================================================ -->
+<!-- 1. SAMPLE ALERTS.XML (for XPath demonstration)              -->
+<!-- File location: ~/smartcity/alerts.xml                       -->
+<!-- ============================================================ -->
+
+<?xml version="1.0" encoding="UTF-8"?>
+<alerts xmlns="http://smartcity.com/alert">
+    <alert>
+        <id>ALERT-1</id>
+        <severity>CRITICAL</severity>
+        <message>Major earthquake detected. Evacuate coastal areas immediately.</message>
+        <region>San Francisco Bay Area</region>
+        <timestamp>2024-12-09T10:30:00</timestamp>
+        <issuer>USGS</issuer>
+    </alert>
+
+    <alert>
+        <id>ALERT-2</id>
+        <severity>SEVERE</severity>
+        <message>Wildfire spreading rapidly. Residents advised to prepare for evacuation.</message>
+        <region>Southern California</region>
+        <timestamp>2024-12-09T11:15:00</timestamp>
+        <issuer>CAL FIRE</issuer>
+    </alert>
+
+    <alert>
+        <id>ALERT-3</id>
+        <severity>WARNING</severity>
+        <message>Heavy rainfall expected. Flood watch in effect.</message>
+        <region>Pacific Northwest</region>
+        <timestamp>2024-12-09T09:00:00</timestamp>
+        <issuer>NOAA</issuer>
+    </alert>
+
+    <alert>
+        <id>ALERT-4</id>
+        <severity>CRITICAL</severity>
+        <message>Hazardous material spill on Highway 101. Avoid the area.</message>
+        <region>Silicon Valley</region>
+        <timestamp>2024-12-09T12:45:00</timestamp>
+        <issuer>EPA</issuer>
+    </alert>
+
+    <alert>
+        <id>ALERT-5</id>
+        <severity>INFO</severity>
+        <message>Emergency drill scheduled for 2 PM. This is a test.</message>
+        <region>Downtown</region>
+        <timestamp>2024-12-09T08:00:00</timestamp>
+        <issuer>City Emergency Services</issuer>
+    </alert>
+
+    <alert>
+        <id>ALERT-6</id>
+        <severity>CRITICAL</severity>
+        <message>Active shooter reported at shopping mall. Lockdown in effect.</message>
+        <region>Metro Area</region>
+        <timestamp>2024-12-09T13:20:00</timestamp>
+        <issuer>Police Department</issuer>
+    </alert>
+
+    <alert>
+        <id>ALERT-7</id>
+        <severity>WARNING</severity>
+        <message>Air quality unhealthy due to smoke. Stay indoors.</message>
+        <region>Central Valley</region>
+        <timestamp>2024-12-09T07:30:00</timestamp>
+        <issuer>Air Quality Board</issuer>
+    </alert>
+</alerts>
+
+        <!-- ============================================================ -->
+        <!-- 2. WEB.XML for SOAP Service (Module A)                      -->
+        <!-- Location: alert-soap-service/src/main/webapp/WEB-INF/web.xml-->
+        <!-- ============================================================ -->
+
+        <?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+         http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+         version="4.0">
+
+<display-name>Alert SOAP Service</display-name>
+<description>Government Agency Alert Broadcasting System</description>
+
+<!-- JAX-WS Servlet for SOAP Service -->
+<servlet>
+    <servlet-name>AlertWebService</servlet-name>
+    <servlet-class>com.sun.xml.ws.transport.http.servlet.WSServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+</servlet>
+
+<servlet-mapping>
+    <servlet-name>AlertWebService</servlet-name>
+    <url-pattern>/AlertWebService</url-pattern>
+</servlet-mapping>
+
+<!-- Alternative: Use Endpoint Publishing (if not using WSServlet) -->
+<listener>
+    <listener-class>com.sun.xml.ws.transport.http.servlet.WSServletContextListener</listener-class>
+</listener>
+
+<!-- Session Configuration -->
+<session-config>
+    <session-timeout>30</session-timeout>
+</session-config>
+
+<!-- Welcome File -->
+<welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+</welcome-file-list>
+
+<!-- Error Pages -->
+<error-page>
+    <error-code>404</error-code>
+    <location>/error/404.html</location>
+</error-page>
+
+<error-page>
+    <error-code>500</error-code>
+    <location>/error/500.html</location>
+</error-page>
+
+</web-app>
+
+        <!-- ============================================================ -->
+        <!-- 3. SUN-JAXWS.XML (JAX-WS Runtime Configuration)             -->
+        <!-- Location: alert-soap-service/src/main/webapp/WEB-INF/       -->
+        <!-- ============================================================ -->
+
+        <?xml version="1.0" encoding="UTF-8"?>
+<endpoints xmlns="http://java.sun.com/xml/ns/jax-ws/ri/runtime" version="2.0">
+
+<endpoint
+        name="AlertWebService"
+        implementation="com.smartcity.alert.service.AlertWebService"
+        url-pattern="/AlertWebService"/>
+
+</endpoints>
+
+        <!-- ============================================================ -->
+        <!-- 4. WEB.XML for REST Service (Module B)                      -->
+        <!-- Location: incident-rest-service/src/main/webapp/WEB-INF/    -->
+        <!-- ============================================================ -->
+
+        <?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+         http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+         version="4.0">
+
+<display-name>Incident REST Service</display-name>
+<description>Citizen Incident Reporting API</description>
+
+<!-- Jersey Servlet Container -->
+<servlet>
+    <servlet-name>Jersey REST Service</servlet-name>
+    <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+    <init-param>
+        <param-name>javax.ws.rs.Application</param-name>
+        <param-value>com.smartcity.incident.config.RestApplication</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+</servlet>
+
+<servlet-mapping>
+    <servlet-name>Jersey REST Service</servlet-name>
+    <url-pattern>/api/*</url-pattern>
+</servlet-mapping>
+
+<!-- CORS Filter (already in Java, but can also be configured here) -->
+<filter>
+    <filter-name>CorsFilter</filter-name>
+    <filter-class>com.smartcity.incident.config.CorsFilter</filter-class>
+</filter>
+
+<filter-mapping>
+    <filter-name>CorsFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+</filter-mapping>
+
+<!-- Session Configuration -->
+<session-config>
+    <session-timeout>30</session-timeout>
+</session-config>
+
+<!-- Welcome File -->
+<welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+</welcome-file-list>
+
+<!-- Error Pages -->
+<error-page>
+    <error-code>404</error-code>
+    <location>/error/404.html</location>
+</error-page>
+
+<error-page>
+    <error-code>500</error-code>
+    <location>/error/500.html</location>
+</error-page>
+
+</web-app>
+
+        <!-- ============================================================ -->
+        <!-- 5. WEB.XML for Web Client (Module C)                        -->
+        <!-- Location: control-center-client/src/main/webapp/WEB-INF/    -->
+        <!-- ============================================================ -->
+
+        <?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+         http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+         version="4.0">
+
+<display-name>Control Center Dashboard</display-name>
+<description>Smart City Control Center Client Application</description>
+
+<!-- Default Welcome File -->
+<welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+</welcome-file-list>
+
+<!-- MIME Type Mappings for Static Resources -->
+<mime-mapping>
+    <extension>html</extension>
+    <mime-type>text/html</mime-type>
+</mime-mapping>
+
+<mime-mapping>
+    <extension>css</extension>
+    <mime-type>text/css</mime-type>
+</mime-mapping>
+
+<mime-mapping>
+    <extension>js</extension>
+    <mime-type>application/javascript</mime-type>
+</mime-mapping>
+
+<mime-mapping>
+    <extension>json</extension>
+    <mime-type>application/json</mime-type>
+</mime-mapping>
+
+<!-- Session Configuration -->
+<session-config>
+    <session-timeout>30</session-timeout>
+    <cookie-config>
+        <http-only>true</http-only>
+        <secure>false</secure> <!-- Set to true in production with HTTPS -->
+    </cookie-config>
+</session-config>
+
+<!-- Error Pages -->
+<error-page>
+    <error-code>404</error-code>
+    <location>/error/404.html</location>
+</error-page>
+
+<error-page>
+    <error-code>500</error-code>
+    <location>/error/500.html</location>
+</error-page>
+
+</web-app>
+
+        <!-- ============================================================ -->
+        <!-- 6. APPLICATION.PROPERTIES (Optional Configuration)          -->
+        <!-- Location: incident-rest-service/src/main/resources/         -->
+        <!-- ============================================================ -->
+
+        # Database Configuration
+        db.url=jdbc:mysql://localhost:3306/smartcity_db
+        db.username=root
+        db.password=password
+        db.driver=com.mysql.cj.jdbc.Driver
+
+        # Connection Pool Settings
+        db.pool.initialSize=5
+        db.pool.maxActive=20
+        db.pool.maxIdle=10
+        db.pool.minIdle=5
+
+        # Application Settings
+        app.name=Smart City Incident REST API
+        app.version=1.0.0
+        app.autoRefreshInterval=30000
+
+        # Logging Configuration
+        logging.level=INFO
+        logging.file=logs/incident-service.log
+
+        <!-- ============================================================ -->
+        <!-- 7. SAMPLE POSTMAN/SOAPUI TEST REQUESTS                      -->
+        <!-- ============================================================ -->
+
+        <!-- SOAP Request: Broadcast Alert -->
+        <!--
+        POST http://localhost:8080/alert-soap-service/AlertWebService
+        Content-Type: text/xml
+
+        <?xml version="1.0"?>
+        <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+                       xmlns:ns="http://service.alert.smartcity.com/">
+          <soap:Body>
+            <ns:broadcastAlert>
+              <alert>
+                <id></id>
+                <severity>CRITICAL</severity>
+                <message>Test emergency alert from Postman</message>
+                <region>Test Region</region>
+                <timestamp>2024-12-09T15:00:00</timestamp>
+                <issuer>Test Agency</issuer>
+              </alert>
+            </ns:broadcastAlert>
+          </soap:Body>
+        </soap:Envelope>
+        -->
+
+        <!-- REST Request: Create Incident -->
+        <!--
+        POST http://localhost:8080/incident-rest-service/api/incidents
+        Content-Type: application/json
+
+        {
+          "type": "Medical Emergency",
+          "description": "Person collapsed on street",
+          "location": "Main Street & 5th Ave",
+          "reportedBy": "Jane Smith",
+          "priority": 1
+        }
+        -->
+
+        <!-- REST Request: Get All Incidents -->
+        <!--
+        GET http://localhost:8080/incident-rest-service/api/incidents
+        Accept: application/json
+        -->
+
+        <!-- REST Request: Update Incident Status -->
+        <!--
+        PUT http://localhost:8080/incident-rest-service/api/incidents/1/status
+        Content-Type: application/json
+
+        {
+          "status": "IN_PROGRESS"
+        }
+        -->

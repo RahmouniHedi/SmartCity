@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://smartcity.com/alert"
+           xmlns:tns="http://smartcity.com/alert"
+           elementFormDefault="qualified">
+
+    <!-- Alert Root Element -->
+    <xs:element name="alert" type="tns:Alert"/>
+
+    <!-- Alerts Collection for XML File -->
+    <xs:element name="alerts">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="tns:alert" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Alert Complex Type -->
+    <xs:complexType name="Alert">
+        <xs:sequence>
+            <xs:element name="id" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>Unique identifier for the alert</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element name="severity" type="tns:SeverityLevel">
+                <xs:annotation>
+                    <xs:documentation>Priority level of the alert</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element name="message" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>Detailed alert message</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element name="region" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>Affected geographical region</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element name="timestamp" type="xs:dateTime">
+                <xs:annotation>
+                    <xs:documentation>When the alert was issued</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element name="issuer" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Government agency issuing the alert</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Severity Level Enumeration -->
+    <xs:simpleType name="SeverityLevel">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="INFO">
+                <xs:annotation>
+                    <xs:documentation>Informational alert</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="WARNING">
+                <xs:annotation>
+                    <xs:documentation>Warning level alert</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="SEVERE">
+                <xs:annotation>
+                    <xs:documentation>Severe situation requiring attention</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="CRITICAL">
+                <xs:annotation>
+                    <xs:documentation>Critical emergency requiring immediate action</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>
