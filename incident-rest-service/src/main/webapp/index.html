@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart City Incident REST Service</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 { color: #2c3e50; }
+        h2 { color: #34495e; margin-top: 25px; }
+        .endpoint {
+            background: #ecf0f1;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .method {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .get { background: #3498db; color: white; }
+        .post { background: #2ecc71; color: white; }
+        .put { background: #f39c12; color: white; }
+        .delete { background: #e74c3c; color: white; }
+        .status {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .status.success { background: #d5f4e6; border-left: 4px solid #2ecc71; }
+        .status.warning { background: #ffeaa7; border-left: 4px solid #f39c12; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚨 Smart City Incident REST Service</h1>
+        <p>Welcome to the Incident Management REST API for Smart City Disaster Management System.</p>
+
+        <div class="status success">
+            <strong>✓ Service Status:</strong> Running<br>
+            <strong>Base URL:</strong> <code>/api/incidents</code>
+        </div>
+
+        <h2>API Endpoints</h2>
+
+        <div class="endpoint">
+            <span class="method get">GET</span>
+            <strong>/api/incidents</strong><br>
+            Get all incidents (supports filtering by status and priority)
+        </div>
+
+        <div class="endpoint">
+            <span class="method get">GET</span>
+            <strong>/api/incidents/{id}</strong><br>
+            Get a specific incident by ID
+        </div>
+
+        <div class="endpoint">
+            <span class="method post">POST</span>
+            <strong>/api/incidents</strong><br>
+            Create a new incident
+        </div>
+
+        <div class="endpoint">
+            <span class="method put">PUT</span>
+            <strong>/api/incidents/{id}</strong><br>
+            Update an existing incident
+        </div>
+
+        <div class="endpoint">
+            <span class="method put">PUT</span>
+            <strong>/api/incidents/{id}/status</strong><br>
+            Update incident status (REPORTED, ACKNOWLEDGED, IN_PROGRESS, RESOLVED, CLOSED)
+        </div>
+
+        <div class="endpoint">
+            <span class="method delete">DELETE</span>
+            <strong>/api/incidents/{id}</strong><br>
+            Delete an incident
+        </div>
+
+        <div class="endpoint">
+            <span class="method get">GET</span>
+            <strong>/api/incidents/stats</strong><br>
+            Get incident statistics
+        </div>
+
+        <h2>Database Configuration</h2>
+        <p>
+            <strong>Database:</strong> smartcity_db<br>
+            <strong>Host:</strong> localhost:3306<br>
+            <strong>Status:</strong> Check server logs for connection status
+        </p>
+
+        <div class="status warning">
+            <strong>⚠ Important:</strong> If you see database connection errors, ensure MySQL is running:<br>
+            <code>net start MySQL80</code> (Windows) or <code>systemctl start mysql</code> (Linux)
+        </div>
+
+        <h2>Testing the API</h2>
+        <p>You can test the API using:</p>
+        <ul>
+            <li>Browser: <a href="api/incidents" target="_blank">api/incidents</a></li>
+            <li>curl: <code>curl http://localhost:8080/incident-rest-service/api/incidents</code></li>
+            <li>Postman or any REST client</li>
+            <li>Control Center Client application</li>
+        </ul>
+
+        <h2>Example Request</h2>
+        <pre style="background: #2c3e50; color: #ecf0f1; padding: 15px; border-radius: 4px;">
+POST /api/incidents
+Content-Type: application/json
+
+{
+  "type": "Fire",
+  "description": "Small fire in building",
+  "location": "123 Main St",
+  "reportedBy": "John Doe",
+  "priority": 1
+}
+        </pre>
+
+        <p style="margin-top: 30px; color: #7f8c8d; font-size: 14px;">
+            Smart City Disaster Management System v1.0.0 |
+            <a href="https://github.com/smartcity" target="_blank">Documentation</a>
+        </p>
+    </div>
+</body>
+</html>
+

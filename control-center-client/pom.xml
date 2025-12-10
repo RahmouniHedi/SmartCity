@@ -14,7 +14,7 @@
     <artifactId>control-center-client</artifactId>
     <packaging>war</packaging>
 
-    <n>Control Center Client</n>
+    <name>Control Center Client</name>
     <description>Web Dashboard for Control Center (Module C)</description>
 
     <dependencies>
@@ -47,6 +47,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
+                <version>3.3.1</version>
                 <configuration>
                     <webResources>
                         <resource>
@@ -57,6 +58,8 @@
             </plugin>
 
             <!-- JAX-WS Plugin for generating SOAP client stubs -->
+            <!-- Disabled: Will be run manually once the SOAP service is deployed -->
+            <!--
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jaxws-maven-plugin</artifactId>
@@ -67,7 +70,7 @@
                             <goal>wsimport</goal>
                         </goals>
                         <configuration>
-                            <!-- Point to the WSDL URL after deploying the SOAP service -->
+                            Point to the WSDL URL after deploying the SOAP service
                             <wsdlUrls>
                                 <wsdlUrl>http://localhost:8080/alert-service?wsdl</wsdlUrl>
                             </wsdlUrls>
@@ -78,6 +81,7 @@
                     </execution>
                 </executions>
             </plugin>
+            -->
         </plugins>
     </build>
 </project>

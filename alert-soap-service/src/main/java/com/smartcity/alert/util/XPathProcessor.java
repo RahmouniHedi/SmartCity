@@ -237,7 +237,7 @@ public class XPathProcessor {
 
         String timestampStr = getElementTextContent(element, "timestamp");
         if (timestampStr != null && !timestampStr.isEmpty()) {
-            alert.setTimestamp(LocalDateTime.parse(timestampStr, FORMATTER));
+            alert.setTimestamp(String.valueOf(LocalDateTime.parse(timestampStr, FORMATTER)));
         }
 
         String issuer = getElementTextContent(element, "issuer");

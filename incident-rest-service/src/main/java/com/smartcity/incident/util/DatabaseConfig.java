@@ -2,6 +2,7 @@ package com.smartcity.incident.util;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
@@ -23,9 +24,13 @@ public class DatabaseConfig {
     private static final Logger LOGGER = Logger.getLogger(DatabaseConfig.class.getName());
 
     // Database connection parameters
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/smartcity_db";
+    private static final String DB_HOST = "localhost";
+    private static final String DB_PORT = "3306";
+    private static final String DB_NAME = "smartcity_db";
+    private static final String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME + "?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
+    private static final String DB_URL_WITHOUT_DB = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
     private static final String DB_USER = "root";
-    private static final String DB_PASSWORD = "password"; // Change in production!
+    private static final String DB_PASSWORD = ""; // Change in production!
 
     // Alternative: Use environment variables for security
     // private static final String DB_PASSWORD = System.getenv("DB_PASSWORD");
@@ -70,44 +75,55 @@ public class DatabaseConfig {
      * Initialize database schema (create tables if they don't exist).
      */
     public void initializeDatabase() {
-        try (Connection conn = getConnection();
+        LOGGER.info("Initializing database...");
+
+        // First, ensure the database exists
+        try (Connection conn = DriverManager.getConnection(DB_URL_WITHOUT_DB, DB_USER, DB_PASSWORD);
              Statement stmt = conn.createStatement()) {
 
             // Create database if not exists
-            String createDbSql = "CREATE DATABASE IF NOT EXISTS smartcity_db";
+            String createDbSql = "CREATE DATABASE IF NOT EXISTS " + DB_NAME;
             stmt.executeUpdate(createDbSql);
-            LOGGER.info("Database 'smartcity_db' ready");
+            LOGGER.info("Database '" + DB_NAME + "' is ready");
 
-            // Use the database
-            stmt.executeUpdate("USE smartcity_db");
+        } catch (SQLException e) {
+            LOGGER.log(Level.WARNING, "Could not create database (it may already exist or MySQL is not running): " + e.getMessage());
+            // Continue anyway - the database might already exist
+        }
+
+        // Now connect to the specific database and create tables
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement()) {
 
             // Create incidents table
-            String createTableSql = """
-                CREATE TABLE IF NOT EXISTS incidents (
-                    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-                    type VARCHAR(100) NOT NULL,
-                    description TEXT NOT NULL,
-                    location VARCHAR(255) NOT NULL,
-                    reported_by VARCHAR(100) NOT NULL,
-                    status VARCHAR(50) NOT NULL DEFAULT 'REPORTED',
-                    reported_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                    priority INT DEFAULT 3,
-                    assigned_to VARCHAR(100),
-                    INDEX idx_status (status),
-                    INDEX idx_priority (priority),
-                    INDEX idx_reported_at (reported_at)
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-                """;
+            String createTableSql = "CREATE TABLE IF NOT EXISTS incidents (" +
+                    "id BIGINT PRIMARY KEY AUTO_INCREMENT," +
+                    "type VARCHAR(100) NOT NULL," +
+                    "description TEXT NOT NULL," +
+                    "location VARCHAR(255) NOT NULL," +
+                    "reported_by VARCHAR(100) NOT NULL," +
+                    "status VARCHAR(50) NOT NULL DEFAULT 'REPORTED'," +
+                    "reported_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP," +
+                    "priority INT DEFAULT 3," +
+                    "assigned_to VARCHAR(100)," +
+                    "INDEX idx_status (status)," +
+                    "INDEX idx_priority (priority)," +
+                    "INDEX idx_reported_at (reported_at)" +
+                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
 
             stmt.executeUpdate(createTableSql);
-            LOGGER.info("Table 'incidents' ready");
+            LOGGER.info("Table 'incidents' is ready");
 
             // Insert sample data if table is empty
             insertSampleDataIfEmpty(conn);
 
+            LOGGER.info("Database initialization completed successfully");
+
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Failed to initialize database", e);
-            throw new RuntimeException("Database initialization failed", e);
+            LOGGER.log(Level.SEVERE, "Failed to initialize database tables: " + e.getMessage(), e);
+            LOGGER.severe("Please ensure MySQL is running on " + DB_HOST + ":" + DB_PORT);
+            LOGGER.severe("You can start MySQL with: net start MySQL (Windows) or systemctl start mysql (Linux)");
+            throw new RuntimeException("Database initialization failed - MySQL may not be running", e);
         }
     }
 
@@ -117,17 +133,15 @@ public class DatabaseConfig {
     private void insertSampleDataIfEmpty(Connection conn) throws SQLException {
         String checkSql = "SELECT COUNT(*) FROM incidents";
         try (Statement stmt = conn.createStatement();
-             var rs = stmt.executeQuery(checkSql)) {
+             ResultSet rs = stmt.executeQuery(checkSql)) {
 
             if (rs.next() && rs.getInt(1) == 0) {
-                String insertSql = """
-                    INSERT INTO incidents (type, description, location, reported_by, status, priority) VALUES
-                    ('Fire', 'Small fire in apartment building', '123 Main St', 'John Doe', 'IN_PROGRESS', 1),
-                    ('Medical Emergency', 'Person collapsed in park', 'Central Park', 'Jane Smith', 'ACKNOWLEDGED', 1),
-                    ('Traffic Accident', 'Two-car collision at intersection', '5th Ave & Oak St', 'Officer Johnson', 'RESOLVED', 2),
-                    ('Power Outage', 'Entire block without electricity', 'Residential Area B', 'Anonymous', 'REPORTED', 3),
-                    ('Water Main Break', 'Street flooding from broken pipe', 'Industrial District', 'City Worker', 'IN_PROGRESS', 2)
-                    """;
+                String insertSql = "INSERT INTO incidents (type, description, location, reported_by, status, priority) VALUES " +
+                    "('Fire', 'Small fire in apartment building', '123 Main St', 'John Doe', 'IN_PROGRESS', 1)," +
+                    "('Medical Emergency', 'Person collapsed in park', 'Central Park', 'Jane Smith', 'ACKNOWLEDGED', 1)," +
+                    "('Traffic Accident', 'Two-car collision at intersection', '5th Ave & Oak St', 'Officer Johnson', 'RESOLVED', 2)," +
+                    "('Power Outage', 'Entire block without electricity', 'Residential Area B', 'Anonymous', 'REPORTED', 3)," +
+                    "('Water Main Break', 'Street flooding from broken pipe', 'Industrial District', 'City Worker', 'IN_PROGRESS', 2)";
 
                 stmt.executeUpdate(insertSql);
                 LOGGER.info("Sample incident data inserted");

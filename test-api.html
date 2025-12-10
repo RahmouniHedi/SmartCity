@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Incident API</title>
+</head>
+<body>
+    <h1>Testing Incident REST API</h1>
+    <button onclick="testAPI()">Test API</button>
+    <pre id="result"></pre>
+
+    <script>
+        function testAPI() {
+            fetch('http://localhost:8080/incident-rest-service/api/incidents')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+                    console.log('Success:', data);
+                })
+                .catch(error => {
+                    document.getElementById('result').textContent = 'Error: ' + error;
+                    console.error('Error:', error);
+                });
+        }
+        // Auto-test on load
+        testAPI();
+    </script>
+</body>
+</html>
+

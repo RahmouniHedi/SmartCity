@@ -34,10 +34,8 @@ public class IncidentDAO {
      * @throws SQLException if database operation fails
      */
     public Incident create(Incident incident) throws SQLException {
-        String sql = """
-            INSERT INTO incidents (type, description, location, reported_by, status, priority, assigned_to)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-            """;
+        String sql = "INSERT INTO incidents (type, description, location, reported_by, status, priority, assigned_to) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = dbConfig.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -137,12 +135,10 @@ public class IncidentDAO {
      * @throws SQLException if database operation fails
      */
     public Incident update(Incident incident) throws SQLException {
-        String sql = """
-            UPDATE incidents
-            SET type = ?, description = ?, location = ?, reported_by = ?,
-                status = ?, priority = ?, assigned_to = ?
-            WHERE id = ?
-            """;
+        String sql = "UPDATE incidents " +
+                     "SET type = ?, description = ?, location = ?, reported_by = ?, " +
+                     "status = ?, priority = ?, assigned_to = ? " +
+                     "WHERE id = ?";
 
         try (Connection conn = dbConfig.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {

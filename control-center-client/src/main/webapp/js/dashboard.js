@@ -12,7 +12,7 @@
 
 // Configuration
 const CONFIG = {
-    SOAP_ENDPOINT: 'http://localhost:8080/alert-service',
+    SOAP_ENDPOINT: 'http://localhost:8080/alert-soap-service/AlertWebService',
     REST_API_BASE: 'http://localhost:8080/incident-rest-service/api',
     AUTO_REFRESH_INTERVAL: 30000, // 30 seconds
     SOAP_NAMESPACE: 'http://service.alert.smartcity.com/'
@@ -194,7 +194,7 @@ async function broadcastAlert(event) {
     };
 
     const soapBody = `
-        <alert>
+        <alert xmlns="http://smartcity.com/alert"> 
             <id></id>
             <severity>${escapeXml(alert.severity)}</severity>
             <message>${escapeXml(alert.message)}</message>
@@ -539,11 +539,33 @@ function displayError(containerId, message) {
 /**
  * Get text content from XML node
  */
+/**
+ * Get text content from XML node, ignoring namespaces (e.g., ns2:id -> id)
+ */
+/**
+ * Helper to get text from XML node, handling namespaces (ns2:id vs id)
+ */
 function getNodeText(parentNode, tagName) {
-    const nodes = parentNode.getElementsByTagName(tagName);
-    return nodes.length > 0 ? nodes[0].textContent : '';
-}
+    // 1. Try finding the tag directly (e.g. "id")
+    let nodes = parentNode.getElementsByTagName(tagName);
+    if (nodes.length > 0) return nodes[0].textContent;
 
+    // 2. Try finding it with the namespace prefix (e.g. "ns2:id")
+    nodes = parentNode.getElementsByTagName("ns2:" + tagName);
+    if (nodes.length > 0) return nodes[0].textContent;
+
+    // 3. Fallback: Search all children for a matching local name
+    // This is the most robust way to ignore ANY prefix (ns1:, ns2:, ax21:, etc.)
+    for (let i = 0; i < parentNode.children.length; i++) {
+        let node = parentNode.children[i];
+        // node.localName gives "id" even if the tag is "ns2:id"
+        if (node.localName === tagName) {
+            return node.textContent;
+        }
+    }
+
+    return 'N/A';
+}
 /**
  * Format timestamp for display
  */

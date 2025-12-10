@@ -14,7 +14,7 @@
     <artifactId>alert-soap-service</artifactId>
     <packaging>war</packaging>
 
-    <n>Alert SOAP Service</n>
+    <name>Alert SOAP Service</name>
     <description>Government Agency Alert Broadcasting System (Module A)</description>
 
     <dependencies>
@@ -70,6 +70,8 @@
             </plugin>
 
             <!-- JAXB XJC Plugin for generating Java from XSD -->
+            <!-- Disabled: Using hand-written JAXB-annotated classes instead -->
+            <!--
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jaxb2-maven-plugin</artifactId>
@@ -90,6 +92,7 @@
                     <clearOutputDir>false</clearOutputDir>
                 </configuration>
             </plugin>
+            -->
 
             <!-- JAX-WS Plugin for generating WSDL -->
             <plugin>

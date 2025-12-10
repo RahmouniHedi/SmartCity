@@ -1,8 +1,8 @@
 package com.smartcity.alert.model;
 
 import javax.xml.bind.annotation.*;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 /**
@@ -39,15 +39,14 @@ public class Alert {
 
     @XmlElement(required = true, namespace = "http://smartcity.com/alert")
     @XmlSchemaType(name = "dateTime")
-    @XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
-    private LocalDateTime timestamp;
+    private String timestamp;
 
     @XmlElement(namespace = "http://smartcity.com/alert")
     private String issuer;
 
     // Constructors
     public Alert() {
-        this.timestamp = LocalDateTime.now();
+        this.timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
     }
 
     public Alert(String id, SeverityLevel severity, String message, String region) {
@@ -55,7 +54,7 @@ public class Alert {
         this.severity = severity;
         this.message = message;
         this.region = region;
-        this.timestamp = LocalDateTime.now();
+        this.timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
     }
 
     public Alert(String id, SeverityLevel severity, String message, String region, String issuer) {
@@ -96,11 +95,11 @@ public class Alert {
         this.region = region;
     }
 
-    public LocalDateTime getTimestamp() {
+    public String getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(LocalDateTime timestamp) {
+    public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
     }
 

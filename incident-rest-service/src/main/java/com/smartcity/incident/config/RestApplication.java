@@ -48,11 +48,11 @@ public class RestApplication extends Application {
     public Set<Class<?>> getClasses() {
         Set<Class<?>> classes = new HashSet<>();
 
-        // Register resource classes
         classes.add(IncidentResource.class);
-
-        // Add CORS filter if needed
         classes.add(CorsFilter.class);
+
+        // ADD THIS LINE:
+        classes.add(JacksonConfig.class);
 
         LOGGER.info("Registered " + classes.size() + " resource classes");
         return classes;
