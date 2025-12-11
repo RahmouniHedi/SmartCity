@@ -3,8 +3,8 @@
     <alert>
         <id>ALERT-1</id>
         <severity>CRITICAL</severity>
-        <message>Major earthquake detected. Evacuate coastal areas immediately.</message>
-        <region>San Francisco Bay Area</region>
+        <message>Tremblement de terre majeur détecté. Évacuez immédiatement les zones côtières.</message>
+        <region>Région de la Baie de San Francisco</region>
         <timestamp>2024-12-09T10:30:00</timestamp>
         <issuer>USGS</issuer>
     </alert>
@@ -12,8 +12,8 @@
     <alert>
         <id>ALERT-2</id>
         <severity>SEVERE</severity>
-        <message>Wildfire spreading rapidly. Residents advised to prepare for evacuation.</message>
-        <region>Southern California</region>
+        <message>Incendie de forêt se propageant rapidement. Les résidents sont invités à se préparer à l'évacuation.</message>
+        <region>Californie du Sud</region>
         <timestamp>2024-12-09T11:15:00</timestamp>
         <issuer>CAL FIRE</issuer>
     </alert>
@@ -21,8 +21,8 @@
     <alert>
         <id>ALERT-3</id>
         <severity>WARNING</severity>
-        <message>Heavy rainfall expected. Flood watch in effect.</message>
-        <region>Pacific Northwest</region>
+        <message>Fortes précipitations prévues. Surveillance d'inondation en vigueur.</message>
+        <region>Nord-Ouest Pacifique</region>
         <timestamp>2024-12-09T09:00:00</timestamp>
         <issuer>NOAA</issuer>
     </alert>
@@ -30,7 +30,7 @@
     <alert>
         <id>ALERT-4</id>
         <severity>CRITICAL</severity>
-        <message>Hazardous material spill on Highway 101. Avoid the area.</message>
+        <message>Déversement de matières dangereuses sur l'autoroute 101. Évitez la zone.</message>
         <region>Silicon Valley</region>
         <timestamp>2024-12-09T12:45:00</timestamp>
         <issuer>EPA</issuer>
@@ -39,27 +39,27 @@
     <alert>
         <id>ALERT-5</id>
         <severity>INFO</severity>
-        <message>Emergency drill scheduled for 2 PM. This is a test.</message>
-        <region>Downtown</region>
+        <message>Exercice d'urgence prévu à 14h00. Ceci est un test.</message>
+        <region>Centre-ville</region>
         <timestamp>2024-12-09T08:00:00</timestamp>
-        <issuer>City Emergency Services</issuer>
+        <issuer>Services d'Urgence de la Ville</issuer>
     </alert>
 
     <alert>
         <id>ALERT-6</id>
         <severity>CRITICAL</severity>
-        <message>Active shooter reported at shopping mall. Lockdown in effect.</message>
-        <region>Metro Area</region>
+        <message>Tireur actif signalé au centre commercial. Confinement en vigueur.</message>
+        <region>Zone Métropolitaine</region>
         <timestamp>2024-12-09T13:20:00</timestamp>
-        <issuer>Police Department</issuer>
+        <issuer>Département de Police</issuer>
     </alert>
 
     <alert>
         <id>ALERT-7</id>
         <severity>WARNING</severity>
-        <message>Air quality unhealthy due to smoke. Stay indoors.</message>
-        <region>Central Valley</region>
+        <message>Qualité de l'air malsaine due à la fumée. Restez à l'intérieur.</message>
+        <region>Vallée Centrale</region>
         <timestamp>2024-12-09T07:30:00</timestamp>
-        <issuer>Air Quality Board</issuer>
+        <issuer>Conseil de Qualité de l'Air</issuer>
     </alert>
 </alerts>

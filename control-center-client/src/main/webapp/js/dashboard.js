@@ -1,14 +1,3 @@
-/**
- * Smart City Control Center Dashboard
- *
- * This client application demonstrates:
- * 1. Consuming SOAP Web Service (Alert Service) - Module A
- * 2. Consuming REST API (Incident Service) - Module B
- * 3. Visual dashboard with NO console output
- * 4. Separation of concerns - Client never accesses database directly
- *
- * @author Smart City Team
- */
 
 // Configuration
 const CONFIG = {
@@ -48,10 +37,10 @@ function updateConnectionStatus(connected) {
 
     if (connected) {
         statusDot.classList.remove('disconnected');
-        statusText.textContent = 'Connected';
+        statusText.textContent = 'Connecté';
     } else {
         statusDot.classList.add('disconnected');
-        statusText.textContent = 'Disconnected';
+        statusText.textContent = 'Déconnecté';
     }
 }
 
@@ -65,9 +54,9 @@ async function refreshDashboard() {
             loadAllIncidents()
         ]);
         updateStatistics();
-        showToast('Dashboard refreshed successfully', 'success');
+        showToast('Tableau de bord actualisé avec succès', 'success');
     } catch (error) {
-        showToast('Error refreshing dashboard: ' + error.message, 'error');
+        showToast('Erreur lors de l\'actualisation du tableau de bord: ' + error.message, 'error');
         updateConnectionStatus(false);
     }
 }
@@ -160,7 +149,7 @@ async function loadAllAlerts() {
         displayAlerts(allAlerts);
         updateConnectionStatus(true);
     } catch (error) {
-        displayError('alertsContainer', 'Failed to load alerts: ' + error.message);
+        displayError('alertsContainer', 'Échec du chargement des alertes: ' + error.message);
         updateConnectionStatus(false);
     }
 }
@@ -174,9 +163,9 @@ async function loadCriticalAlerts() {
         const response = await callSOAPService('getCriticalAlerts', '');
         const criticalAlerts = parseAlertsFromSOAP(response);
         displayAlerts(criticalAlerts);
-        showToast(`Showing ${criticalAlerts.length} critical alerts (XPath filtered)`, 'success');
+        showToast(`Affichage de ${criticalAlerts.length} alertes critiques (filtrées par XPath)`, 'success');
     } catch (error) {
-        displayError('alertsContainer', 'Failed to load critical alerts: ' + error.message);
+        displayError('alertsContainer', 'Échec du chargement des alertes critiques: ' + error.message);
     }
 }
 
@@ -193,14 +182,17 @@ async function broadcastAlert(event) {
         issuer: document.getElementById('alertIssuer').value
     };
 
+    // Define the namespace prefix for cleaner XML
+    const ns = "http://smartcity.com/alert";
+
     const soapBody = `
-        <alert xmlns="http://smartcity.com/alert"> 
-            <id></id>
-            <severity>${escapeXml(alert.severity)}</severity>
-            <message>${escapeXml(alert.message)}</message>
-            <region>${escapeXml(alert.region)}</region>
-            <timestamp>${new Date().toISOString()}</timestamp>
-            <issuer>${escapeXml(alert.issuer)}</issuer>
+        <alert>
+            <id xmlns="${ns}"></id>
+            <severity xmlns="${ns}">${escapeXml(alert.severity)}</severity>
+            <message xmlns="${ns}">${escapeXml(alert.message)}</message>
+            <region xmlns="${ns}">${escapeXml(alert.region)}</region>
+            <timestamp xmlns="${ns}">${new Date().toISOString()}</timestamp>
+            <issuer xmlns="${ns}">${escapeXml(alert.issuer)}</issuer>
         </alert>
     `;
 
@@ -212,6 +204,22 @@ async function broadcastAlert(event) {
         await loadAllAlerts();
     } catch (error) {
         showToast('Failed to broadcast alert: ' + error.message, 'error');
+    }
+    try {
+        // Capture the response
+        const responseXml = await callSOAPService('broadcastAlert', soapBody);
+        const responseText = responseXml.getElementsByTagName('return')[0].textContent;
+
+        if (responseText.startsWith("Error")) {
+            showToast(responseText, 'error'); // Show the actual server error
+        } else {
+            showToast('Alerte diffusée avec succès!', 'success');
+            closeModal('broadcastModal');
+            document.getElementById('broadcastForm').reset();
+            await loadAllAlerts();
+        }
+    } catch (error) {
+        showToast('Échec de la diffusion de l\'alerte: ' + error.message, 'error');
     }
 }
 
@@ -250,7 +258,7 @@ function displayAlerts(alerts) {
         container.innerHTML = `
             <div class="empty-state">
                 <div class="empty-state-icon">📭</div>
-                <p>No alerts to display</p>
+                <p>Aucune alerte à afficher</p>
             </div>
         `;
         return;
@@ -320,7 +328,7 @@ async function loadAllIncidents() {
         displayIncidents(allIncidents);
         updateConnectionStatus(true);
     } catch (error) {
-        displayError('incidentsContainer', 'Failed to load incidents: ' + error.message);
+        displayError('incidentsContainer', 'Échec du chargement des incidents: ' + error.message);
         updateConnectionStatus(false);
     }
 }
@@ -332,9 +340,9 @@ async function loadHighPriorityIncidents() {
     try {
         const incidents = await callRESTAPI('/incidents/highpriority');
         displayIncidents(incidents);
-        showToast(`Showing ${incidents.length} high-priority incidents`, 'success');
+        showToast(`Affichage de ${incidents.length} incidents de haute priorité`, 'success');
     } catch (error) {
-        displayError('incidentsContainer', 'Failed to load high-priority incidents: ' + error.message);
+        displayError('incidentsContainer', 'Échec du chargement des incidents de haute priorité: ' + error.message);
     }
 }
 
@@ -370,12 +378,12 @@ async function submitIncident(event) {
 
     try {
         await callRESTAPI('/incidents', 'POST', incident);
-        showToast('Incident reported successfully!', 'success');
+        showToast('Incident signalé avec succès!', 'success');
         closeModal('reportModal');
         document.getElementById('reportForm').reset();
         await loadAllIncidents();
     } catch (error) {
-        showToast('Failed to report incident: ' + error.message, 'error');
+        showToast('Échec du signalement de l\'incident: ' + error.message, 'error');
     }
 }
 
@@ -385,10 +393,10 @@ async function submitIncident(event) {
 async function updateIncidentStatus(id, newStatus) {
     try {
         await callRESTAPI(`/incidents/${id}/status`, 'PUT', { status: newStatus });
-        showToast('Incident status updated', 'success');
+        showToast('Statut de l\'incident mis à jour', 'success');
         await loadAllIncidents();
     } catch (error) {
-        showToast('Failed to update status: ' + error.message, 'error');
+        showToast('Échec de la mise à jour du statut: ' + error.message, 'error');
     }
 }
 
@@ -396,16 +404,16 @@ async function updateIncidentStatus(id, newStatus) {
  * Delete incident
  */
 async function deleteIncident(id) {
-    if (!confirm('Are you sure you want to delete this incident?')) {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cet incident?')) {
         return;
     }
 
     try {
         await callRESTAPI(`/incidents/${id}`, 'DELETE');
-        showToast('Incident deleted', 'success');
+        showToast('Incident supprimé', 'success');
         await loadAllIncidents();
     } catch (error) {
-        showToast('Failed to delete incident: ' + error.message, 'error');
+        showToast('Échec de la suppression de l\'incident: ' + error.message, 'error');
     }
 }
 
@@ -422,7 +430,7 @@ function displayIncidents(incidents) {
         container.innerHTML = `
             <div class="empty-state">
                 <div class="empty-state-icon">📭</div>
-                <p>No incidents to display</p>
+                <p>Aucun incident à afficher</p>
             </div>
         `;
         return;
@@ -441,16 +449,16 @@ function displayIncidents(incidents) {
             <div class="card-meta">
                 <span>👤 ${incident.reportedBy}</span>
                 <span>🕒 ${formatTimestamp(incident.reportedAt)}</span>
-                <span>⚡ Priority: ${incident.priority}</span>
+                <span>⚡ Priorité: ${incident.priority}</span>
             </div>
             <div class="card-actions">
                 ${incident.status === 'REPORTED' ?
-        `<button class="btn btn-small btn-action" onclick="updateIncidentStatus(${incident.id}, 'ACKNOWLEDGED')">Acknowledge</button>` : ''}
+        `<button class="btn btn-small btn-action" onclick="updateIncidentStatus(${incident.id}, 'ACKNOWLEDGED')">Reconnaître</button>` : ''}
                 ${incident.status === 'ACKNOWLEDGED' ?
-        `<button class="btn btn-small btn-action" onclick="updateIncidentStatus(${incident.id}, 'IN_PROGRESS')">Start Response</button>` : ''}
+        `<button class="btn btn-small btn-action" onclick="updateIncidentStatus(${incident.id}, 'IN_PROGRESS')">Commencer Intervention</button>` : ''}
                 ${incident.status === 'IN_PROGRESS' ?
-        `<button class="btn btn-small btn-action" onclick="updateIncidentStatus(${incident.id}, 'RESOLVED')">Mark Resolved</button>` : ''}
-                <button class="btn btn-small btn-action" style="background: #ef4444; color: white;" onclick="deleteIncident(${incident.id})">Delete</button>
+        `<button class="btn btn-small btn-action" onclick="updateIncidentStatus(${incident.id}, 'RESOLVED')">Marquer Résolu</button>` : ''}
+                <button class="btn btn-small btn-action" style="background: #ef4444; color: white;" onclick="deleteIncident(${incident.id})">Supprimer</button>
             </div>
         </div>
     `).join('');
@@ -577,13 +585,13 @@ function formatTimestamp(timestamp) {
     const diffMs = now - date;
     const diffMins = Math.floor(diffMs / 60000);
 
-    if (diffMins < 1) return 'Just now';
-    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffMins < 1) return 'À l\'instant';
+    if (diffMins < 60) return `Il y a ${diffMins}m`;
 
     const diffHours = Math.floor(diffMins / 60);
-    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffHours < 24) return `Il y a ${diffHours}h`;
 
-    return date.toLocaleString();
+    return date.toLocaleString('fr-FR');
 }
 
 /**

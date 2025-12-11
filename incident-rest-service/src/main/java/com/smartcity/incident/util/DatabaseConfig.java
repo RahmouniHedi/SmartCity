@@ -137,12 +137,11 @@ public class DatabaseConfig {
 
             if (rs.next() && rs.getInt(1) == 0) {
                 String insertSql = "INSERT INTO incidents (type, description, location, reported_by, status, priority) VALUES " +
-                    "('Fire', 'Small fire in apartment building', '123 Main St', 'John Doe', 'IN_PROGRESS', 1)," +
-                    "('Medical Emergency', 'Person collapsed in park', 'Central Park', 'Jane Smith', 'ACKNOWLEDGED', 1)," +
-                    "('Traffic Accident', 'Two-car collision at intersection', '5th Ave & Oak St', 'Officer Johnson', 'RESOLVED', 2)," +
-                    "('Power Outage', 'Entire block without electricity', 'Residential Area B', 'Anonymous', 'REPORTED', 3)," +
-                    "('Water Main Break', 'Street flooding from broken pipe', 'Industrial District', 'City Worker', 'IN_PROGRESS', 2)";
-
+                        "('Incendie', 'Feu de broussailles près de la forêt, risque de propagation', 'Bizerte - Corniche', 'Ahmed Tounsi', 'IN_PROGRESS', 1)," +
+                        "('Urgence Médicale', 'Malaise cardiaque dans un café', 'Sousse - Sahloul', 'Sami Ben Amor', 'ACKNOWLEDGED', 1)," +
+                        "('Accident Route', 'Collision entre un camion et une voiture', 'Tunis - Route X', 'Police Circulation', 'RESOLVED', 2)," +
+                        "('Panne Électricité', 'Coupure de courant dans tout le quartier depuis 2h', 'Sfax - Route El Ain', 'Anonyme', 'REPORTED', 3)," +
+                        "('Fuite d''eau', 'Rupture de canalisation principale, inondation de la rue', 'Ariana - Ennasr 2', 'Syndic Immeuble', 'IN_PROGRESS', 2)";
                 stmt.executeUpdate(insertSql);
                 LOGGER.info("Sample incident data inserted");
             }

@@ -1,20 +1,20 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart City - Control Center Dashboard</title>
+    <title>Ville Intelligente - Tableau de Bord du Centre de Contrôle</title>
     <link rel="stylesheet" href="css/dashboard.css">
 </head>
 <body>
 <!-- Header -->
 <header class="header">
     <div class="container">
-        <h1 class="logo">🏙️ Smart City Control Center</h1>
+        <h1 class="logo">🏙️ Centre de Contrôle Ville Intelligente</h1>
         <div class="status-indicator">
             <span class="status-dot" id="connectionStatus"></span>
-            <span id="statusText">Connecting...</span>
+            <span id="statusText">Connexion...</span>
         </div>
     </div>
 </header>
@@ -26,15 +26,15 @@
         <!-- Dashboard Controls -->
         <div class="controls-panel">
             <button class="btn btn-primary" onclick="refreshDashboard()">
-                🔄 Refresh Dashboard
+                🔄 Actualiser le tableau de bord
             </button>
             <button class="btn btn-secondary" onclick="showReportModal()">
-                📝 Report New Incident
+                📝 Signaler un nouvel incident
             </button>
             <div class="auto-refresh">
                 <label>
                     <input type="checkbox" id="autoRefresh" checked>
-                    Auto-refresh (30s)
+                    Actualisation automatique (30s)
                 </label>
             </div>
         </div>
@@ -45,28 +45,28 @@
                 <div class="stat-icon">🚨</div>
                 <div class="stat-content">
                     <h3 id="criticalAlertsCount">-</h3>
-                    <p>Critical Alerts</p>
+                    <p>Alertes Critiques</p>
                 </div>
             </div>
             <div class="stat-card warning">
                 <div class="stat-icon">⚠️</div>
                 <div class="stat-content">
                     <h3 id="totalAlertsCount">-</h3>
-                    <p>Total Alerts</p>
+                    <p>Total des Alertes</p>
                 </div>
             </div>
             <div class="stat-card info">
                 <div class="stat-icon">📋</div>
                 <div class="stat-content">
                     <h3 id="totalIncidentsCount">-</h3>
-                    <p>Active Incidents</p>
+                    <p>Incidents Actifs</p>
                 </div>
             </div>
             <div class="stat-card success">
                 <div class="stat-icon">✅</div>
                 <div class="stat-content">
                     <h3 id="resolvedCount">-</h3>
-                    <p>Resolved Today</p>
+                    <p>Résolus Aujourd'hui</p>
                 </div>
             </div>
         </div>
@@ -77,37 +77,37 @@
             <!-- Left Column: Government Alerts (SOAP) -->
             <div class="panel alerts-panel">
                 <div class="panel-header">
-                    <h2>🏛️ Government Alerts (SOAP Service)</h2>
+                    <h2>🏛️ Alertes Gouvernementales (Service SOAP)</h2>
                     <span class="badge" id="alertsBadge">0</span>
                 </div>
                 <div class="panel-controls">
-                    <button class="btn-small" onclick="loadAllAlerts()">All</button>
-                    <button class="btn-small critical-btn" onclick="loadCriticalAlerts()">Critical Only</button>
-                    <button class="btn-small" onclick="showBroadcastModal()">+ Broadcast</button>
+                    <button class="btn-small" onclick="loadAllAlerts()">Toutes</button>
+                    <button class="btn-small critical-btn" onclick="loadCriticalAlerts()">Critiques Seulement</button>
+                    <button class="btn-small" onclick="showBroadcastModal()">+ Diffuser</button>
                 </div>
                 <div class="panel-content" id="alertsContainer">
-                    <div class="loading">Loading alerts...</div>
+                    <div class="loading">Chargement des alertes...</div>
                 </div>
             </div>
 
             <!-- Right Column: Citizen Incidents (REST) -->
             <div class="panel incidents-panel">
                 <div class="panel-header">
-                    <h2>👥 Citizen Reports (REST API)</h2>
+                    <h2>👥 Signalements Citoyens (API REST)</h2>
                     <span class="badge" id="incidentsBadge">0</span>
                 </div>
                 <div class="panel-controls">
                     <select id="statusFilter" onchange="filterIncidents()">
-                        <option value="">All Status</option>
-                        <option value="REPORTED">Reported</option>
-                        <option value="ACKNOWLEDGED">Acknowledged</option>
-                        <option value="IN_PROGRESS">In Progress</option>
-                        <option value="RESOLVED">Resolved</option>
+                        <option value="">Tous les Statuts</option>
+                        <option value="REPORTED">Signalé</option>
+                        <option value="ACKNOWLEDGED">Reconnu</option>
+                        <option value="IN_PROGRESS">En Cours</option>
+                        <option value="RESOLVED">Résolu</option>
                     </select>
-                    <button class="btn-small" onclick="loadHighPriorityIncidents()">High Priority</button>
+                    <button class="btn-small" onclick="loadHighPriorityIncidents()">Haute Priorité</button>
                 </div>
                 <div class="panel-content" id="incidentsContainer">
-                    <div class="loading">Loading incidents...</div>
+                    <div class="loading">Chargement des incidents...</div>
                 </div>
             </div>
         </div>
@@ -118,40 +118,40 @@
 <div id="reportModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeModal('reportModal')">&times;</span>
-        <h2>Report New Incident</h2>
+        <h2>Signaler un Nouvel Incident</h2>
         <form id="reportForm" onsubmit="submitIncident(event)">
             <div class="form-group">
                 <label>Type:</label>
                 <select id="incidentType" required>
-                    <option value="">Select Type</option>
-                    <option value="Fire">Fire</option>
-                    <option value="Medical Emergency">Medical Emergency</option>
-                    <option value="Traffic Accident">Traffic Accident</option>
+                    <option value="">Sélectionner le Type</option>
+                    <option value="Incendie">Incendie</option>
+                    <option value="Urgence Médicale">Urgence Médicale</option>
+                    <option value="Accident de Circulation">Accident de Circulation</option>
                     <option value="Crime">Crime</option>
-                    <option value="Hazmat">Hazardous Materials</option>
-                    <option value="Flooding">Flooding</option>
-                    <option value="Power Outage">Power Outage</option>
-                    <option value="Other">Other</option>
+                    <option value="Matières Dangereuses">Matières Dangereuses</option>
+                    <option value="Inondation">Inondation</option>
+                    <option value="Panne de Courant">Panne de Courant</option>
+                    <option value="Autre">Autre</option>
                 </select>
             </div>
             <div class="form-group">
-                <label>Location:</label>
-                <input type="text" id="incidentLocation" required placeholder="e.g., 123 Main St">
+                <label>Localisation:</label>
+                <input type="text" id="incidentLocation" required placeholder="ex: 123 Rue Principale">
             </div>
             <div class="form-group">
                 <label>Description:</label>
                 <textarea id="incidentDescription" required rows="4"
-                          placeholder="Describe the incident..."></textarea>
+                          placeholder="Décrivez l'incident..."></textarea>
             </div>
             <div class="form-group">
-                <label>Reported By:</label>
-                <input type="text" id="incidentReporter" required placeholder="Your name or ID">
+                <label>Signalé par:</label>
+                <input type="text" id="incidentReporter" required placeholder="Votre nom ou identifiant">
             </div>
             <div class="form-group">
-                <label>Priority (1-5):</label>
+                <label>Priorité (1-5):</label>
                 <input type="number" id="incidentPriority" min="1" max="5" value="3" required>
             </div>
-            <button type="submit" class="btn btn-primary">Submit Report</button>
+            <button type="submit" class="btn btn-primary">Soumettre le Signalement</button>
         </form>
     </div>
 </div>
@@ -160,31 +160,31 @@
 <div id="broadcastModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeModal('broadcastModal')">&times;</span>
-        <h2>Broadcast Emergency Alert</h2>
+        <h2>Diffuser une Alerte d'Urgence</h2>
         <form id="broadcastForm" onsubmit="broadcastAlert(event)">
             <div class="form-group">
-                <label>Severity:</label>
+                <label>Sévérité:</label>
                 <select id="alertSeverity" required>
                     <option value="INFO">Info</option>
-                    <option value="WARNING">Warning</option>
-                    <option value="SEVERE">Severe</option>
-                    <option value="CRITICAL">Critical</option>
+                    <option value="WARNING">Avertissement</option>
+                    <option value="SEVERE">Sévère</option>
+                    <option value="CRITICAL">Critique</option>
                 </select>
             </div>
             <div class="form-group">
-                <label>Region:</label>
-                <input type="text" id="alertRegion" required placeholder="e.g., Downtown Area">
+                <label>Région:</label>
+                <input type="text" id="alertRegion" required placeholder="ex: Centre-ville">
             </div>
             <div class="form-group">
                 <label>Message:</label>
                 <textarea id="alertMessage" required rows="4"
-                          placeholder="Emergency alert message..."></textarea>
+                          placeholder="Message d'alerte d'urgence..."></textarea>
             </div>
             <div class="form-group">
-                <label>Issuer:</label>
-                <input type="text" id="alertIssuer" required placeholder="Agency name">
+                <label>Émetteur:</label>
+                <input type="text" id="alertIssuer" required placeholder="Nom de l'agence">
             </div>
-            <button type="submit" class="btn btn-primary">Broadcast Alert</button>
+            <button type="submit" class="btn btn-primary">Diffuser l'Alerte</button>
         </form>
     </div>
 </div>
@@ -194,8 +194,8 @@
 
 <!-- Footer -->
 <footer class="footer">
-    <p>Smart City Disaster Management System | University Project 2024</p>
-    <p>Distributed Architecture: SOAP + REST + Web Client</p>
+    <p>Système de Gestion des Catastrophes Ville Intelligente | Projet Universitaire 2024</p>
+    <p>Architecture Distribuée: SOAP + REST + Client Web</p>
 </footer>
 
 <script src="js/dashboard.js"></script>

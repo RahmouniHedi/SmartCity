@@ -154,26 +154,34 @@ public class AlertRepository {
     /**
      * Initialize sample data for demonstration.
      */
+    /**
+     * Initialize sample data for demonstration (Tunisia Context).
+     */
     private void initializeSampleData() {
-        Alert alert1 = new Alert("ALERT-1", SeverityLevel.CRITICAL,
-                "Major earthquake detected. Evacuate coastal areas immediately.",
-                "San Francisco Bay Area", "USGS");
+        // Alerte Inondation (Nabeul/Cap Bon - Scénario réaliste)
+        Alert alert1 = new Alert("ALERTE-1", SeverityLevel.CRITICAL,
+                "Inondations majeures suite aux fortes pluies. Évitez les déplacements et montez aux étages.",
+                "Nabeul", "Protection Civile");
 
-        Alert alert2 = new Alert("ALERT-2", SeverityLevel.SEVERE,
-                "Wildfire spreading rapidly. Residents advised to prepare for evacuation.",
-                "Southern California", "CAL FIRE");
+        // Alerte Canicule (Sud Tunisien)
+        Alert alert2 = new Alert("ALERTE-2", SeverityLevel.SEVERE,
+                "Vague de chaleur extrême. Températures dépassant 48°C à l'ombre.",
+                "Tozeur", "INM (Météo Tunisie)");
 
-        Alert alert3 = new Alert("ALERT-3", SeverityLevel.WARNING,
-                "Heavy rainfall expected. Flood watch in effect.",
-                "Pacific Northwest", "NOAA");
+        // Alerte Vent de Sable (Autoroute Sud)
+        Alert alert3 = new Alert("ALERTE-3", SeverityLevel.WARNING,
+                "Vents de sable violents réduisant la visibilité à moins de 50m. Prudence sur l'autoroute.",
+                "Gabès - Autoroute A1", "Garde Nationale");
 
-        Alert alert4 = new Alert("ALERT-4", SeverityLevel.CRITICAL,
-                "Hazardous material spill on Highway 101. Avoid the area.",
-                "Silicon Valley", "EPA");
+        // Alerte Pollution/Industrielle
+        Alert alert4 = new Alert("ALERTE-4", SeverityLevel.CRITICAL,
+                "Fuite de gaz industrielle détectée. Zone industrielle fermée. Portez des masques.",
+                "Sfax - Zone Thyna", "ONAS");
 
-        Alert alert5 = new Alert("ALERT-5", SeverityLevel.INFO,
-                "Emergency drill scheduled for 2 PM. This is a test.",
-                "Downtown", "City Emergency Services");
+        // Alerte Info Trafic
+        Alert alert5 = new Alert("ALERTE-5", SeverityLevel.INFO,
+                "Travaux de maintenance sur le Pont Rades-La Goulette. Circulation ralentie.",
+                "Tunis - La Goulette", "Ministère de l'Équipement");
 
         alertCache.put(alert1.getId(), alert1);
         alertCache.put(alert2.getId(), alert2);
@@ -183,7 +191,6 @@ public class AlertRepository {
 
         idCounter.set(6);
     }
-
     /**
      * Wrapper class for JAXB list serialization.
      */
